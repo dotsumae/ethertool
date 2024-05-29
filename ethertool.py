@@ -1,5 +1,8 @@
 from scapy.all import conf,AsyncSniffer,TCP,IP, send, sr, ICMP, Ether, load_contrib, sendp
 
+import inputs
+import confidential
+
 load_contrib('pnio')
 conf.verb=True
 
