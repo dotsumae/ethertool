@@ -1,12 +1,48 @@
-from scapy.all import conf,AsyncSniffer,TCP,IP, send, sr, ICMP, Ether, load_contrib, sendp
+import os,sys
+from pathlib import Path
 
-import inputs
+from scapy.layers.inet import ICMP, IP
+from scapy.sendrecv import *
+from scapy.main import load_contrib
+
+from inputs import ui
 import confidential
 
 load_contrib('pnio')
 conf.verb=True
 
-sniffer=AsyncSniffer(prn = lambda x: x.summary(), timeout=2)
-pkt=Ether(src='84:3a:5b:03:c7:3d', dst='10:65:30:b9:19:bb')/ProfinetIO(frameID="RT_CLASS_1")/b'ABC'
+def main():
+    Path(ui["results_folder"]).mkdir(parents=True, exist_ok=True)
+    discover_devices()
+    
 
-sendp(iface="eth0", x=pkt, count=10)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def discover_devices(interface=ui["interface"]):
+    discover_commands = {
+        "lldp":"lldpcli show neighbors ports " + interface,
+        "IP":"ping 255.255.255.255 -c 3 -b -I" + interface
+        }
+    for scan in discover_commands:
+        with open("device_discovery.md","a") as log:
+            log.write("# "+ scan)
+        os.system(discover_commands[scan] + " >> " + ui["results_folder"] + "device_discovery.md") 
+        
+
+if __name__ == "__main__":
+    main()
